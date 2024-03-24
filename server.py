@@ -18,7 +18,7 @@ port = 7777
 # bind the socket to the port
 serverSocket.bind((host, port))
 
-# start listening for requests
+# start listening for requests ok
 serverSocket.listen()
 
 listenFlag = True
