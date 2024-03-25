@@ -4,6 +4,9 @@
 # Continues listening
 # Use Python 3 to run
 
+from Crypto.Cipher import AES
+from Crypto.Hash import HMAC, SHA256
+from Crypto.Random import get_random_bytes
 import socket
 
 # create a socket object that will listen
@@ -38,8 +41,12 @@ while listenFlag:
       if not receivedBytes:
          break
       else:
+         aes_key = get_random_bytes(16)
+         # hmac_key = get_random_bytes(16)
+         cipher = AES.new(aes_key, AES.MODE_CBC)
+         decryptedBytes = cipher.decrypt(receivedBytes)
          # Decode the bytes into a string (Do this only for strings, not keys)
-         receivedMessage = bytes.decode(receivedBytes)
+         receivedMessage = bytes.decode(decryptedBytes)
          # Print the message
          print("From client: ", receivedMessage.upper())
 
@@ -47,6 +54,12 @@ while listenFlag:
          message = "Hello Client from the server"
          # Encode the message into bytes
          messageBytes = message.encode()
+
+
+         cipherBytes = cipher.encrypt(messageBytes)
+         # hmac = HMAC.new(hmac_key, digestmod=SHA256)
+         # tag = hmac.update(cipher.nonce + ciphertext).digest()
          # Send the bytes through the client socket
-         clientSocket.send(messageBytes)
+
+         clientSocket.send(cipherBytes)
 
