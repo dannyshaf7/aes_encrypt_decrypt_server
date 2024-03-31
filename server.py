@@ -31,6 +31,7 @@ while listenFlag:
    # Print the address and port of the client
    # addr_port is a tuple that contains both the address and the port number
    print("Got a connection from " + str(addr_port))
+
    while True:
       # Receive the message from the client (receive no more than 1024 bytes)
       receivedBytes = clientSocket.recv(1024)
@@ -40,7 +41,7 @@ while listenFlag:
       else:
          receivedMessage = bytes.decode(receivedBytes)
          # Print the message
-         print("From client: ", receivedMessage.upper())
+         print("From client: ", receivedMessage)
 
          # This message will be sent to the client
          message = "Hello Client from the server"
