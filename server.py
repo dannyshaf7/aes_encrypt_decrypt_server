@@ -1,5 +1,5 @@
 # Server program
-# Listens at port 7777
+# Listens at port 12000
 # Receives the client's message and replies to it and closes the connection
 # Continues listening
 # Use Python 3 to run
@@ -42,6 +42,13 @@ while listenFlag:
          receivedMessage = bytes.decode(receivedBytes)
          # Print the message
          print("From client: ", receivedMessage)
+         if (receivedMessage.equals("cbc")):
+            print("I am cbc") #For troubleshooting
+         elif (receivedMessage.equals("ecb")):
+            print("I am ecb")  # For troubleshooting
+         else:
+            print("I am the other option") #For troubleshooting
+
          #Server receives the key from the
          # This message will be sent to the client
          message = "Hello Client from the server"

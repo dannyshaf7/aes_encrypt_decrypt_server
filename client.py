@@ -1,5 +1,5 @@
 # Server program
-# Listens at port 7777
+# Listens at port 12000
 # Receives the client's message and replies to it and closes the connection
 # Continues listening
 # Use Python 3 to run
@@ -14,13 +14,11 @@ serverName="localhost"
 serverPort=12000
 clientSocket=socket(socket.AF_INET, socket.SOCK_STREAM)
 clientSocket.connect((serverName,serverPort))
-#message=input("Enter a message: ")
-#while (message != "bye"): #Keeps going until the client enters bye
 
-if (sys.argv[1].isalpha()):
+if (sys.argv[1] is not None & sys.argv[1].isalpha()):
     mode=sys.argv[1].lower()
     if (mode.equals("ecb")):
-        if sys.argv[0].isdigit():
+        if sys.argv[1] is not None & sys.argv[0].isdigit():
             keysize = sys.argv[0]
             if (keysize.equals("128") or keysize.equals("192") or keysize.equals("256")):
                 key_bytes= int(keysize) / 8 #Calculates the number of bytes for the key from the bits given
@@ -28,8 +26,11 @@ if (sys.argv[1].isalpha()):
                 # hmac_key = get_random_bytes(16)
                 #Generate the AES key
                 cipher = AES.new(aes_key, AES.MODE_ECB)
-                #Display the key on the client window
-                print("The key that was generated was: "+cipher)
+                #Send mode to server to prepare for the key
+                sendType = bytes.encode(mode)
+                clientSocket.send(sendType)
+                # Display the key on the client window
+                print("The key that was generated was: " + cipher)
                 sendCipher=bytes.encode(cipher)
                 #Sending the key to the server
                 clientSocket.send(sendCipher)
@@ -59,6 +60,9 @@ if (sys.argv[1].isalpha()):
                 IV = get_random_bytes(16)
                 # hmac_key = get_random_bytes(16)
                 cipher = AES.new(aes_key, AES.MODE_CBC, IV)
+                #Send mode to server to prepare for the key and IV
+                sendType = bytes.encode(mode)
+                clientSocket.send(sendType)
                 # Display the key on the client window
                 print("The key that was generated was: " + cipher)
                 # Sending the key to the server
