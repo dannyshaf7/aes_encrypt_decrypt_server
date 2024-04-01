@@ -12,8 +12,8 @@ serverSocket = socket.socket(
 
 # get local machine name
 host = socket.gethostname()
-# the socket will isten at port 7777
-port = 7777
+# the socket will listen at port 12000
+port = 12000
 
 # bind the socket to the port
 serverSocket.bind((host, port))
@@ -42,7 +42,7 @@ while listenFlag:
          receivedMessage = bytes.decode(receivedBytes)
          # Print the message
          print("From client: ", receivedMessage)
-
+         #Server receives the key from the
          # This message will be sent to the client
          message = "Hello Client from the server"
          # Encode the message into bytes
