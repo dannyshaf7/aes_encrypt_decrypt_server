@@ -7,13 +7,12 @@
 import socket
 
 # create a socket object that will listen
-serverSocket = socket.socket(
-   socket.AF_INET, socket.SOCK_STREAM)
+serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # get local machine name
 host = socket.gethostname()
 # the socket will listen at port 12000
-port = 12000
+port = 7777
 
 # bind the socket to the port
 serverSocket.bind((host, port))
@@ -42,9 +41,9 @@ while listenFlag:
          receivedMessage = bytes.decode(receivedBytes)
          # Print the message
          print("From client: ", receivedMessage)
-         if (receivedMessage.equals("cbc")):
+         if (receivedMessage == "cbc"):
             print("I am cbc") #For troubleshooting
-         elif (receivedMessage.equals("ecb")):
+         elif (receivedMessage == "ecb"):
             print("I am ecb")  # For troubleshooting
          else:
             print("I am the other option") #For troubleshooting
