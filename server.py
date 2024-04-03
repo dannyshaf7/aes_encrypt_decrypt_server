@@ -7,6 +7,7 @@
 from Crypto.Cipher import AES
 from Crypto.Hash import HMAC, SHA256
 from Crypto.Random import get_random_bytes
+from Crypto.Util.Padding import pad, unpad
 import socket
 
 # create a socket object that will listen
@@ -15,7 +16,7 @@ serverSocket = socket.socket(
 
 # get local machine name
 host = socket.gethostname()
-# the socket will isten at port 7777
+# the socket will listen at port 7777
 port = 7777
 
 # bind the socket to the port
@@ -34,32 +35,36 @@ while listenFlag:
    # Print the address and port of the client
    # addr_port is a tuple that contains both the address and the port number
    print("Got a connection from " + str(addr_port))
-   while True:
-      # Receive the message from the client (receive no more than 1024 bytes)
-      receivedBytes = clientSocket.recv(1024)
-      # if there is no value for received bytes, no longer connected to client so break the while loop
-      if not receivedBytes:
-         break
-      else:
-         aes_key = get_random_bytes(16)
-         # hmac_key = get_random_bytes(16)
-         cipher = AES.new(aes_key, AES.MODE_CBC)
-         decryptedBytes = cipher.decrypt(receivedBytes)
-         # Decode the bytes into a string (Do this only for strings, not keys)
-         receivedMessage = bytes.decode(decryptedBytes)
-         # Print the message
-         print("From client: ", receivedMessage.upper())
+   key_received = clientSocket.recv(1024)
+   print("key received: ", key_received, "\n")
+   mode_bytes = clientSocket.recv(1024)
+   mode_received = mode_bytes.decode().lower()
+   if mode_received == "ecb":
+      print("ecb mode")
+      while True:
+         # Receive the message from the client (receive no more than 1024 bytes)
+         msg_received = clientSocket.recv(1024)
+         # if there is no value for received bytes, no longer connected to client so break the while loop
+         if not msg_received:
+            break
+         else:
+            cipher = AES.new(key_received, AES.MODE_ECB)
+            pt_bytes = unpad(cipher.decrypt(msg_received), AES.block_size)
+            received_plaintext = pt_bytes.decode()
+            print("decrypted message: ", received_plaintext)
 
-         # This message will be sent to the client
-         message = "Hello Client from the server"
-         # Encode the message into bytes
-         messageBytes = message.encode()
-
-
-         cipherBytes = cipher.encrypt(messageBytes)
-         # hmac = HMAC.new(hmac_key, digestmod=SHA256)
-         # tag = hmac.update(cipher.nonce + ciphertext).digest()
-         # Send the bytes through the client socket
-
-         clientSocket.send(cipherBytes)
-
+   elif mode_received == "cbc":
+      print("cbc mode")
+      while True:
+         iv_received = clientSocket.recv(1024)
+         print("iv received: ", iv_received)
+         # Receive the message from the client (receive no more than 1024 bytes)
+         msg_received = clientSocket.recv(1024)
+         # if there is no value for received bytes, no longer connected to client so break the while loop
+         if not msg_received:
+            break
+         else:
+            cipher = AES.new(key_received, AES.MODE_CBC, iv_received)
+            pt_bytes = unpad(cipher.decrypt(msg_received), AES.block_size)
+            received_plaintext = pt_bytes.decode()
+            print(received_plaintext)
