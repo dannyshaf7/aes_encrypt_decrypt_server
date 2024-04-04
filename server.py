@@ -52,9 +52,9 @@ while listenFlag:
             cipher = AES.new(key_received, AES.MODE_ECB)
             pt_bytes = unpad(cipher.decrypt(msg_received), AES.block_size)
             received_plaintext = pt_bytes.decode()
-            num= ''.join(x for x in received_plaintext if x.isdigit())
-            if num.isdigit():
-               if int(num) > 0:
+            if received_plaintext.isdigit():
+               num=int(received_plaintext)
+               if num > 0:
                   longString=""
                   for i in range(int(num), 0, -1):
                      msg_received = client_socket.recv(1024)
