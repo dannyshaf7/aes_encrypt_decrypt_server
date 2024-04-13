@@ -1,6 +1,8 @@
-# Server program
+# Server program for RSA key transport and AES encryption and decryption for messsaging
+# Authors: Kiara Clemons and Daniel Shafar 
 # Listens at port 7777
-# Receives the client's message and replies to it and closes the connection
+# This program sends the client program that connects to it an RSA public key for the client to encrypt the AES generated to start encrypted communication
+# During the encrypted communication, the server receives the client's message and replies to it and closes the connection after 'bye' has been typed by the user
 # Continues listening
 # Use Python 3 to run
 
@@ -63,7 +65,7 @@ while listenFlag:
 
    keys=RSA.generate(3072) #3072 is the suggested size according to NIST 
    #display public key
-   print(keys.public_key().exportKey()) #returns the key encoded into bytes 
+   print("Public key of RSA: ", keys.public_key().exportKey()) #returns the key encoded into bytes 
    #send public key 
    print("Sending RSA key")
    client_socket.send(keys.public_key().exportKey())
@@ -73,7 +75,7 @@ while listenFlag:
    # addr_port is a tuple that contains both the address and the port number
    
    encrypted_key_received = client_socket.recv(1024)
-   print("Encrypted key received ", encrypted_key_received)
+   #print("Encrypted key received ", encrypted_key_received)
    private_key=RSA.importKey(keys.exportKey()) #Have to create RSA key
    #print("The private key is ", private_key)
    RSA_decrypt=PKCS1_OAEP.new(private_key)
@@ -81,6 +83,9 @@ while listenFlag:
    key_received= RSA_decrypt.decrypt(encrypted_key_received)
 
    print("decrypted key received: ", key_received, "\n")
+
+
+
    mode_bytes = client_socket.recv(1024)
    mode_received = mode_bytes.decode().lower()
    if mode_received == "ecb":
